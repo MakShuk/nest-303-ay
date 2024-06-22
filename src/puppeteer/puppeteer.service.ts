@@ -1,26 +1,30 @@
 import { Injectable } from '@nestjs/common';
-import { CreatePuppeteerDto } from './dto/create-puppeteer.dto';
-import { UpdatePuppeteerDto } from './dto/update-puppeteer.dto';
+import { LoggerService } from 'src/service/logger/logger.service';
+import puppeteer from 'puppeteer';
 
 @Injectable()
 export class PuppeteerService {
-  create(createPuppeteerDto: CreatePuppeteerDto) {
-    return 'This action adds a new puppeteer';
-  }
+  constructor(private readonly log: LoggerService) {}
 
-  findAll() {
+  async findAll() {
+    this.log.info('This action returns all puppeteer');
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.setViewport({ width: 1080, height: 1024 });
+    await page.goto('https://developer.chrome.com/');
+    await page
+      .locator('.devsite-search-field')
+      .fill('automate beyond recorder');
+    await page.locator('.devsite-result-item-link').click();
+
+    const textSelector = await page
+      .locator('text/Customize and automate')
+      .waitHandle();
+    const fullTitle = await textSelector?.evaluate((el) => el.textContent);
+
+    console.log('The title of this blog post is "%s".', fullTitle);
+
+    await browser.close();
     return `This action returns all puppeteer`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} puppeteer`;
-  }
-
-  update(id: number, updatePuppeteerDto: UpdatePuppeteerDto) {
-    return `This action updates a #${id} puppeteer`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} puppeteer`;
   }
 }
