@@ -11,5 +11,6 @@ const loggerServiceProvider = {
 @Module({
   controllers: [PuppeteerController],
   providers: [PuppeteerService, loggerServiceProvider],
+  exports: [PuppeteerService],  
 })
 export class PuppeteerModule {}

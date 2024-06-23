@@ -1,5 +1,6 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get} from '@nestjs/common';
 import { PuppeteerService } from './puppeteer.service';
+
 
 @Controller('puppeteer')
 export class PuppeteerController {
