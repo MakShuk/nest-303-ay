@@ -9,22 +9,32 @@ export class AppService {
     private readonly browser: PuppeteerService,
   ) {}
 
-  async start(): Promise<any> {
-    await this.browser.browserAction('start');
-    await this.browser.goto('https://300.ya.ru/');
+  async start(query: string): Promise<any> {
+    try {
+      await this.browser.browserAction('start');
+      await this.browser.goto('https://300.ya.ru/');
 
-    const authorizationStatus = await this.checkAuthorization();
-    if ('errorMessage' in authorizationStatus) {
-      await this.authorization();
+      const authorizationStatus = await this.checkAuthorization();
+      if ('errorMessage' in authorizationStatus) {
+        await this.authorization();
+      }
+
+      const requestStatus = await this.sendRequest(query);
+
+      if ('errorMessage' in requestStatus) {
+        /* throw new Error(
+          `Ошибка отправки запроса: ${requestStatus.errorMessage}`,
+        ); */
+      }
+
+      const screenshot = await this.browser.page.screenshot();
+      await this.browser.browserAction('close');
+      return { data: screenshot };
+    } catch (error) {
+      const errorMessage = `Error start: ${error.message}`;
+      this.log.error(errorMessage);
+      return { error: errorMessage };
     }
-
-    const textarea = await this.browser.page.waitForSelector('textarea');
-    await textarea.type('https://lifehacker.ru/gde-katatsya-na-sapah/');
-    await textarea.press('Enter');
-    await this.browser.page.waitForNavigation({ waitUntil: 'networkidle0' });
-    const screenshot = await this.browser.page.screenshot();
-    await this.browser.browserAction('close');
-    return screenshot;
   }
 
   private async checkUrlFor15Seconds(): Promise<{
@@ -98,6 +108,22 @@ export class AppService {
       return { data: 'Пользователь авторизован.' };
     } catch (error) {
       const errorMessage = `Error checkAuthorization: ${error.message}`;
+      this.log.error(errorMessage);
+      return { errorMessage };
+    }
+  }
+
+  private async sendRequest(request: string) {
+    try {
+      const textarea = await this.browser.page.waitForSelector('textarea');
+      await textarea.type(request);
+      await textarea.press('Enter');
+      await this.browser.page.waitForNavigation({
+        waitUntil: 'networkidle0',
+      });
+      return { data: `` };
+    } catch (error) {
+      const errorMessage = `Error sendRequest: ${error.message}`;
       this.log.error(errorMessage);
       return { errorMessage };
     }
