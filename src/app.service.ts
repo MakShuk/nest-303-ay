@@ -39,21 +39,29 @@ export class AppService {
     }
   }
 
-  async getPageData(isUrl: boolean = false) {
+  async getPageData(isUrl: boolean) {
     const titleSelector = 'h1';
     const contentSelector = 'li';
     const checkButtonSelector = 'span.text';
     try {
-      await this.browser.page.waitForSelector(checkButtonSelector, {
-        timeout: 10000,
-      });
-
       let title = '';
       if (isUrl) {
         title = await this.browser.page.$eval(titleSelector, (element) =>
           element.textContent.trim(),
         );
       }
+
+      this.log.info(`Заголовок: ${title}`);
+
+      if (title.includes(`Что-то пошло не так. Попробуйте еще`)) {
+        throw new Error(
+          `Попробуйте еще раз или выберите другой источник пересказа`,
+        );
+      }
+
+      await this.browser.page.waitForSelector(checkButtonSelector, {
+        timeout: 10000,
+      });
 
       const content = await this.browser.page.$$eval(
         contentSelector,
