@@ -15,6 +15,37 @@ export class AppService {
     private readonly browser: PuppeteerService,
   ) {}
 
+  async getAllShort(query: string[]) {
+    try {
+      await this.browser.browserAction('start');
+      await this.browser.goto('https://300.ya.ru/');
+
+      const authorizationStatus = await this.checkAuthorization();
+      if ('errorMessage' in authorizationStatus) {
+        await this.authorization();
+      }
+
+      const data = [];
+      for (const item of query) {
+        const requestStatus = await this.requestToPage(item);
+        if ('errorMessage' in requestStatus) {
+          this.log.error(`Ошибка запроса --> ${requestStatus.errorMessage}`);
+        } else {
+          data.push(requestStatus.data);
+        }
+        await this.browser.goto('https://300.ya.ru/');
+      }
+
+      await this.browser.browserAction('close');
+
+      return { data };
+    } catch (error) {
+      const errorMessage = `GetAllShort --> ${error.message}`;
+      this.log.error(errorMessage);
+      return { errorMessage };
+    }
+  }
+
   async getOneShort(query: string) {
     try {
       await this.browser.browserAction('start');
@@ -50,8 +81,6 @@ export class AppService {
           element.textContent.trim(),
         );
       }
-
-      this.log.info(`Заголовок: ${title}`);
 
       if (title.includes(`Что-то пошло не так. Попробуйте еще`)) {
         throw new Error(

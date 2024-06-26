@@ -1,8 +1,12 @@
-import { Body, Controller, Get, Res, UsePipes } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Res, UsePipes } from '@nestjs/common';
 import { AppService } from './app.service';
 import { Response } from 'express';
 import { ValidationPipe } from '@nestjs/common';
-import { ParseShortPageDto, ShortDescriptionDto } from './app-dto';
+import {
+  ParseShortPageDto,
+  ShortAllDescriptionDto,
+  ShortDescriptionDto,
+} from './app-dto';
 import { LoggerService } from './service/logger/logger.service';
 
 @Controller()
@@ -15,14 +19,30 @@ export class AppController {
   @Get('one-short-description')
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async start(@Body() body: ShortDescriptionDto): Promise<any> {
-    this.logger.info('start');
-    const query = body.query as unknown as string;
-    console.log('query', query);
-    const screenshotStatus = await this.appService.getOneShort(query);
-    if ('errorMessage' in screenshotStatus) {
-      return { errorMessage: screenshotStatus.errorMessage };
+    this.logger.info('one-short-description');
+    const reqStatus = await this.appService.getOneShort(body.query);
+    if ('errorMessage' in reqStatus) {
+      throw new HttpException(
+        `${reqStatus.errorMessage}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     } else {
-      return { data: screenshotStatus.data };
+      return { data: reqStatus.data };
+    }
+  }
+
+  @Get('all-short-descriptions')
+  @UsePipes(new ValidationPipe({ whitelist: true }))
+  async startAll(@Body() body: ShortAllDescriptionDto): Promise<any> {
+    this.logger.info('all-short-descriptions');
+    const reqStatus = await this.appService.getAllShort(body.query);
+    if ('errorMessage' in reqStatus) {
+      throw new HttpException(
+        `${reqStatus.errorMessage}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    } else {
+      return { data: reqStatus.data };
     }
   }
 }

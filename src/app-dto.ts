@@ -7,6 +7,11 @@ import {
   IsNotEmpty,
   IsUrl,
   MaxLength,
+  IsArray,
+  ArrayNotEmpty,
+  ArrayMinSize,
+  IsString,
+  Length,
 } from 'class-validator';
 
 function IsStringOrUrlAndLength(validationOptions?: ValidationOptions) {
@@ -18,15 +23,12 @@ function IsStringOrUrlAndLength(validationOptions?: ValidationOptions) {
       options: validationOptions,
       validator: {
         validate(value: any, args: ValidationArguments) {
-          // Проверяем, является ли значение URL
           if (isURL(value)) {
-            return true; // Если значение является URL, валидация проходит успешно
+            return true; 
           }
-          // Если значение не URL, проверяем, является ли оно строкой и имеет ли длину более 300 символов
           return isString(value) && value.length > 300;
         },
         defaultMessage(args: ValidationArguments) {
-          // Сообщение об ошибке, если валидация не прошла
           return `${args.property} must be a valid URL or a string longer than 300 characters`;
         },
       },
@@ -44,4 +46,13 @@ export class ParseShortPageDto {
   @IsNotEmpty()
   @MaxLength(30000)
   readonly url: string;
+}
+
+export class ShortAllDescriptionDto {
+  @IsArray()
+  @ArrayNotEmpty()
+  @ArrayMinSize(1)
+  @IsString({ each: true })
+  @Length(10, 30000, { each: true })
+  readonly query: string[];
 }

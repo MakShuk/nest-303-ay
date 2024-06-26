@@ -20,3 +20,11 @@ content-type: application/json
 {
     "query": "https://www.elle.ru/krasota/uhod-za-kozhey/10-samyh-populyarnyh-kremov-dlya-lica/"
 }
+
+### all short descriptions
+GET {{url}}/all-short-descriptions
+content-type: application/json
+
+{
+    "query": ["https://lifehacker.ru/kitae-ispytali-vertikalnuyu-posadku-rakety/", "https://lifehacker.ru/33-grobnicy-s-neobychnymi-mumiyami/", "https://lifehacker.ru/predstavlena-kolonka-beats-pill/"]
+}
