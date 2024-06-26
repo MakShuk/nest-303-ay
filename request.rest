@@ -2,10 +2,10 @@ GET {{url}}/one-short-description
 content-type: application/json
 
 {
-    "query": "https://lifehacker.ru/oshibki-pri-uborke-pylesosom/"
+    "query": "https://eu.usatoday.com/story/graphics/2024/06/26/trump-vp-choices-pros-cons/74186580007/"
 }
 
-###
+### text
 GET {{url}}/one-short-description
 content-type: application/json
 

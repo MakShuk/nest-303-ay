@@ -60,12 +60,13 @@ export class AppService {
       }
 
       await this.browser.page.waitForSelector(checkButtonSelector, {
-        timeout: 10000,
+        timeout: 15000,
       });
 
       const content = await this.browser.page.$$eval(
         contentSelector,
-        (elements) => elements.map((element) => element.textContent.trim()),
+        (elements) =>
+          elements.map((element) => element.textContent.trim().substring(2)),
       );
 
       const link = this.browser.page.url();
