@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { LoggerService } from './service/logger/logger.service';
 import { PuppeteerService } from './puppeteer/puppeteer.service';
+import { isURL } from 'class-validator';
 
 type CheckType = {
   data?: string;
@@ -14,7 +15,7 @@ export class AppService {
     private readonly browser: PuppeteerService,
   ) {}
 
-  async getOneShort(query: string): Promise<any> {
+  async getOneShort(query: string) {
     try {
       await this.browser.browserAction('start');
       await this.browser.goto('https://300.ya.ru/');
@@ -24,26 +25,13 @@ export class AppService {
         await this.authorization();
       }
 
-      const requestStatus = await this.sendRequest(query);
-
+      const requestStatus = await this.requestToPage(query);
       if ('errorMessage' in requestStatus) {
-        throw new Error(
-          `Ошибка отправки запроса --> ${requestStatus.errorMessage}`,
-        );
+        throw new Error(`Ошибка запроса --> ${requestStatus.errorMessage}`);
       }
 
-      const getPageDataStatus = await this.getPageData();
-      if ('errorMessage' in getPageDataStatus) {
-        throw new Error(
-          `Ошибка получения данных со страницы --> ${getPageDataStatus.errorMessage}`,
-        );
-      }
-
-      console.log('getPageDataStatus', getPageDataStatus);
-
-      const screenshot = await this.browser.page.screenshot();
       await this.browser.browserAction('close');
-      return { data: screenshot };
+      return { data: requestStatus.data };
     } catch (error) {
       const errorMessage = `Error start --> ${error.message}`;
       this.log.error(errorMessage);
@@ -51,17 +39,22 @@ export class AppService {
     }
   }
 
-  async getPageData() {
+  async getPageData(isUrl: boolean = false) {
     const titleSelector = 'h1';
     const contentSelector = 'li';
     const checkButtonSelector = 'span.text';
     try {
       await this.browser.page.waitForSelector(checkButtonSelector, {
-        timeout: 8000,
+        timeout: 10000,
       });
-      const title = await this.browser.page.$eval(titleSelector, (element) =>
-        element.textContent.trim(),
-      );
+
+      let title = '';
+      if (isUrl) {
+        title = await this.browser.page.$eval(titleSelector, (element) =>
+          element.textContent.trim(),
+        );
+      }
+
       const content = await this.browser.page.$$eval(
         contentSelector,
         (elements) => elements.map((element) => element.textContent.trim()),
@@ -72,6 +65,30 @@ export class AppService {
       return { data: { title, content, link } };
     } catch (error) {
       const errorMessage = `--> getPageData: ${error.message}`;
+      this.log.error(errorMessage);
+      return { errorMessage };
+    }
+  }
+
+  private async requestToPage(query: string) {
+    try {
+      const requestStatus = await this.sendRequest(query);
+
+      if ('errorMessage' in requestStatus) {
+        throw new Error(
+          `Ошибка отправки запроса --> ${requestStatus.errorMessage}`,
+        );
+      }
+
+      const getPageDataStatus = await this.getPageData(isURL(query));
+      if ('errorMessage' in getPageDataStatus) {
+        throw new Error(
+          `Ошибка получения данных со страницы --> ${getPageDataStatus.errorMessage}`,
+        );
+      }
+      return { data: getPageDataStatus.data };
+    } catch (error) {
+      const errorMessage = `--> requestToPage: ${error.message}`;
       this.log.error(errorMessage);
       return { errorMessage };
     }

@@ -6,6 +6,7 @@ import {
   isString,
   IsNotEmpty,
   IsUrl,
+  MaxLength,
 } from 'class-validator';
 
 function IsStringOrUrlAndLength(validationOptions?: ValidationOptions) {
@@ -41,5 +42,6 @@ export class ShortDescriptionDto {
 export class ParseShortPageDto {
   @IsUrl()
   @IsNotEmpty()
+  @MaxLength(30000)
   readonly url: string;
 }
