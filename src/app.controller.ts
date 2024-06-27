@@ -1,22 +1,48 @@
-import { Body, Controller, Get, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Res, UsePipes } from '@nestjs/common';
 import { AppService } from './app.service';
-import { Response, query } from 'express';
+import { Response } from 'express';
+import { ValidationPipe } from '@nestjs/common';
+import {
+  ParseShortPageDto,
+  ShortAllDescriptionDto,
+  ShortDescriptionDto,
+} from './app-dto';
+import { LoggerService } from './service/logger/logger.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    private readonly logger: LoggerService,
+  ) {}
 
-  @Get()
-  async start(
-    @Res() res: Response,
-    @Body() body: { query: string },
-  ): Promise<any> {
-    const screenshotStatus = await this.appService.start(body.query);
-    if ('errorMessage' in screenshotStatus) {
-      res.status(500).send(screenshotStatus.errorMessage);
+  @Get('one-short-description')
+  @UsePipes(new ValidationPipe({ whitelist: true }))
+  async start(@Body() body: ShortDescriptionDto): Promise<any> {
+    this.logger.info('one-short-description');
+    const reqStatus = await this.appService.getOneShort(body.query);
+    if ('errorMessage' in reqStatus) {
+      throw new HttpException(
+        `${reqStatus.errorMessage}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    } else {
+      return { data: reqStatus.data };
     }
-    res.setHeader('Content-Type', 'image/jpeg');
-    res.setHeader('Content-Disposition', 'inline; filename="1.jpg"');
-    res.send(screenshotStatus.data);
+  }
+
+  @Get('all-short-descriptions')
+  @UsePipes(new ValidationPipe({ whitelist: true }))
+  async startAll(@Body() body: ShortAllDescriptionDto): Promise<any> {
+    this.logger.info('all-short-descriptions');
+    const reqStatus = await this.appService.getAllShort(body.query);
+    if ('errorMessage' in reqStatus) {
+      throw new HttpException(
+        `${reqStatus.errorMessage}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    } else {
+      return { data: reqStatus.data };
+    }
   }
 }
