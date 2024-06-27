@@ -15,6 +15,7 @@ import {
 } from 'class-validator';
 
 function IsStringOrUrlAndLength(validationOptions?: ValidationOptions) {
+  // eslint-disable-next-line @typescript-eslint/ban-types
   return function (object: Object, propertyName: string) {
     registerDecorator({
       name: 'isStringOrUrlAndLength',
@@ -22,6 +23,7 @@ function IsStringOrUrlAndLength(validationOptions?: ValidationOptions) {
       propertyName: propertyName,
       options: validationOptions,
       validator: {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         validate(value: any, _: ValidationArguments) {
           if (isURL(value)) {
             return true;
