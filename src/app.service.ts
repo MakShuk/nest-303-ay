@@ -77,9 +77,10 @@ export class AppService {
     try {
       let title = '';
       if (isUrl) {
-        title = await this.browser.page.$eval(titleSelector, (element) =>
-          element.textContent.trim(),
-        );
+        title = await this.browser.page.$eval(titleSelector, (element) => {
+          if (!element.textContent) return '';
+          return element.textContent.trim();
+        });
       }
 
       if (title.includes(`Что-то пошло не так. Попробуйте еще`)) {
@@ -95,7 +96,10 @@ export class AppService {
       const content = await this.browser.page.$$eval(
         contentSelector,
         (elements) =>
-          elements.map((element) => element.textContent.trim().substring(2)),
+          elements.map((element) => {
+            if (!element.textContent) return null;
+            return element.textContent.trim().substring(2);
+          }),
       );
 
       const link = this.browser.page.url();
@@ -168,6 +172,9 @@ export class AppService {
 
   private async authorization() {
     try {
+      if (!process.env.YA_LOGIN || !process.env.YA_PASSWORD) {
+        throw new Error('Не заданы логин или пароль.');
+      }
       await this.browser.page.locator('.login').click();
       await this.browser.page.waitForNavigation({ waitUntil: 'networkidle0' });
       await this.browser.page
@@ -197,7 +204,7 @@ export class AppService {
 
   private async checkAuthorization() {
     try {
-      const data = await this.browser.page.waitForSelector(
+      await this.browser.page.waitForSelector(
         '.svelte-1on2f8 > a > img',
         { timeout: 10000 },
       );
@@ -212,6 +219,9 @@ export class AppService {
   private async sendRequest(request: string) {
     try {
       const textarea = await this.browser.page.waitForSelector('textarea');
+      if (!textarea) {
+        throw new Error('Не найдено поле для ввода запроса.');
+      }
       await textarea.type(request);
       await textarea.press('Enter');
       await this.browser.page.waitForNavigation({

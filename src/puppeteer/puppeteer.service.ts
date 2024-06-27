@@ -84,6 +84,7 @@ export class PuppeteerService {
     } catch (error) {
       const errorMessage = `Error saveCookie: ${error.message}`;
       this.log.error(errorMessage);
+      return null;
     }
   }
 
@@ -99,6 +100,7 @@ export class PuppeteerService {
     } catch (error) {
       const errorMessage = `Error loadCookie: ${error.message}`;
       this.log.error(errorMessage);
+      return null;
     }
   }
 }

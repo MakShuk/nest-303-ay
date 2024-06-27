@@ -22,7 +22,7 @@ function IsStringOrUrlAndLength(validationOptions?: ValidationOptions) {
       propertyName: propertyName,
       options: validationOptions,
       validator: {
-        validate(value: any, args: ValidationArguments) {
+        validate(value: any, _: ValidationArguments) {
           if (isURL(value)) {
             return true; 
           }

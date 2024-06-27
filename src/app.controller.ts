@@ -1,12 +1,15 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Res, UsePipes } from '@nestjs/common';
-import { AppService } from './app.service';
-import { Response } from 'express';
-import { ValidationPipe } from '@nestjs/common';
 import {
-  ParseShortPageDto,
-  ShortAllDescriptionDto,
-  ShortDescriptionDto,
-} from './app-dto';
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  UsePipes,
+} from '@nestjs/common';
+import { AppService } from './app.service';
+
+import { ValidationPipe } from '@nestjs/common';
+import { ShortAllDescriptionDto, ShortDescriptionDto } from './app-dto';
 import { LoggerService } from './service/logger/logger.service';
 
 @Controller()
