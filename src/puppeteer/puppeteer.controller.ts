@@ -1,12 +1,4 @@
-import { Controller, Get} from '@nestjs/common';
-import { PuppeteerService } from './puppeteer.service';
-
+import { Controller } from '@nestjs/common';
 
 @Controller('puppeteer')
-export class PuppeteerController {
-  constructor(private readonly puppeteerService: PuppeteerService) {}
-  @Get()
-  findAll() {
-    return this.puppeteerService.findAll();
-  }
-}
+export class PuppeteerController {}

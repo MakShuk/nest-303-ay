@@ -204,10 +204,9 @@ export class AppService {
 
   private async checkAuthorization() {
     try {
-      await this.browser.page.waitForSelector(
-        '.svelte-1on2f8 > a > img',
-        { timeout: 10000 },
-      );
+      await this.browser.page.waitForSelector('.svelte-1on2f8 > a > img', {
+        timeout: 10000,
+      });
       return { data: 'Пользователь авторизован.' };
     } catch (error) {
       const errorMessage = `--> checkAuthorization: ${error.message}`;

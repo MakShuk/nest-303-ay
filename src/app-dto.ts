@@ -24,7 +24,7 @@ function IsStringOrUrlAndLength(validationOptions?: ValidationOptions) {
       validator: {
         validate(value: any, _: ValidationArguments) {
           if (isURL(value)) {
-            return true; 
+            return true;
           }
           return isString(value) && value.length > 300;
         },
