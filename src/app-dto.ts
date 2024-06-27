@@ -56,5 +56,10 @@ export class ShortAllDescriptionDto {
   @ArrayMinSize(1)
   @IsString({ each: true })
   @Length(10, 30000, { each: true })
-  readonly query: string[];
+  readonly urls: string[];
+}
+
+export class ParserRequestDto {
+  @IsStringOrUrlAndLength()
+  readonly originalUrl: string;
 }
