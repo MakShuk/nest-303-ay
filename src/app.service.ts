@@ -97,14 +97,18 @@ export class AppService {
         contentSelector,
         (elements) =>
           elements.map((element) => {
-            if (!element.textContent) return null;
+            if (!element.textContent) return;
             return element.textContent.trim().substring(2);
           }),
       );
 
-      const link = this.browser.page.url();
+      const filteredContent = content.filter(
+        (item): item is string => item !== undefined,
+      );
 
-      return { data: { title, content, link } };
+      const summaryUrl = this.browser.page.url();
+
+      return { data: { title, content: filteredContent, summaryUrl } };
     } catch (error) {
       const errorMessage = `--> getPageData: ${error.message}`;
       this.log.error(errorMessage);
