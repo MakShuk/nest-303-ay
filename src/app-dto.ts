@@ -60,6 +60,6 @@ export class ShortAllDescriptionDto {
 }
 
 export class ParserRequestDto {
-  @IsStringOrUrlAndLength()
+  //@IsStringOrUrlAndLength()
   readonly originalUrl: string;
 }

@@ -2,7 +2,7 @@ GET {{url}}/one-short-description
 content-type: application/json
 
 {
-    "query": "https://eu.usatoday.com/story/graphics/2024/06/26/trump-vp-choices-pros-cons/74186580007/"
+    "query": "https://habr.com/ru/companies/onlinepatent/news/825178/"
 }
 
 ### text
@@ -27,4 +27,12 @@ content-type: application/json
 
 {
     "query": ["https://lifehacker.ru/kitae-ispytali-vertikalnuyu-posadku-rakety/", "https://lifehacker.ru/33-grobnicy-s-neobychnymi-mumiyami/", "https://lifehacker.ru/predstavlena-kolonka-beats-pill/"]
+}
+
+###
+GET {{url}}/short-description-for-parser
+content-type: application/json
+
+{
+    "originalUrl": "https://eu.usatoday.com/story/graphics/2024/06/26/trump-vp-choices-pros-cons/74186580007/"
 }

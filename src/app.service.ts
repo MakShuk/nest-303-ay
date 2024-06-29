@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { LoggerService } from './service/logger/logger.service';
 import { PuppeteerService } from './puppeteer/puppeteer.service';
 import { isURL } from 'class-validator';
+import * as fs from 'fs/promises';
+import * as path from 'path';
 
 type CheckType = {
   data?: string;
@@ -92,13 +94,14 @@ export class AppService {
       await this.browser.page.waitForSelector(checkButtonSelector, {
         timeout: 15000,
       });
-
+      await this.browser.page.click('label:nth-child(2)');
+      //await this.screenshot('шаг-2');
       const content = await this.browser.page.$$eval(
         contentSelector,
         (elements) =>
           elements.map((element) => {
             if (!element.textContent) return;
-            return element.textContent.trim().substring(2);
+            return element.textContent.trim().replace(/^•\s*/, '');
           }),
       );
 
@@ -235,6 +238,34 @@ export class AppService {
       const errorMessage = `sendRequest --> ${error.message}`;
       this.log.error(errorMessage);
       return { errorMessage };
+    }
+  }
+
+  async screenshot(fileName: string = 'screenshot') {
+    try {
+      const dir = path.join(__dirname, '..', 'screenshots');
+      const stream = await this.browser.page.screenshot();
+      const fullFileName = `${dir}/${fileName}.png`;
+      await fs.writeFile(fullFileName, stream);
+      this.log.info(`Скриншот создан, путь: ${fullFileName}`);
+      return { data: 'Скриншот создан.' };
+    } catch (error) {
+      const errorMessage = `screenshot --> ${error.message}`;
+      this.log.error(errorMessage);
+      return { errorMessage };
+    }
+  }
+
+  async clearDirectory() {
+    try {
+      const dir = path.join(__dirname, '..', 'screenshots');
+      const files = await fs.readdir(dir);
+      for (const file of files) {
+        await fs.unlink(path.join(dir, file));
+      }
+      console.log('Папка со скриншотами очищена.');
+    } catch (err) {
+      console.error('Ошибка при очистке папки со скриншотами:', err);
     }
   }
 }

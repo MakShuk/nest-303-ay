@@ -9,11 +9,7 @@ import {
 import { AppService } from './app.service';
 
 import { ValidationPipe } from '@nestjs/common';
-import {
-  ParserRequestDto,
-  ShortAllDescriptionDto,
-  ShortDescriptionDto,
-} from './app-dto';
+import { ShortAllDescriptionDto, ShortDescriptionDto } from './app-dto';
 import { LoggerService } from './service/logger/logger.service';
 
 @Controller()
@@ -56,10 +52,20 @@ export class AppController {
   @Get('short-description-for-parser')
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async ShortDescriptionFotParser(
-    @Body() body: ParserRequestDto,
+    @Body()
+    body: {
+      originalTitle: string;
+      imageUrl: string;
+      originalUrl: string;
+      resourceId: number;
+      title: string;
+      content: string;
+      summaryUrl: string;
+    },
   ): Promise<any> {
     this.logger.info('Запрос на получение краткого описания для парсера');
-    const reqStatus = await this.appService.getOneShort(body.originalUrl);
+    const { originalTitle, imageUrl, originalUrl, resourceId } = body;
+    const reqStatus = await this.appService.getOneShort(originalUrl);
     if ('errorMessage' in reqStatus) {
       this.logger.error('Ошибка при запросе краткого описания для парсера');
       throw new HttpException(
@@ -67,8 +73,17 @@ export class AppController {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     } else {
-      this.logger.info('Ответ на запрос краткого описания для парсера');
-      return { data: reqStatus.data };
+      const { title, content, summaryUrl } = reqStatus.data;
+      const fullData = {
+        originalTitle,
+        imageUrl,
+        originalUrl,
+        resourceId,
+        title,
+        content,
+        summaryUrl,
+      };
+      return { data: fullData };
     }
   }
 }
