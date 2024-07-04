@@ -78,6 +78,9 @@ export class AppService {
     const checkButtonSelector = 'span.text';
     try {
       let title = '';
+      await this.browser.page.waitForSelector(checkButtonSelector, {
+        timeout: 15000,
+      });
       if (isUrl) {
         title = await this.browser.page.$eval(titleSelector, (element) => {
           if (!element.textContent) return '';
@@ -91,11 +94,7 @@ export class AppService {
         );
       }
 
-      await this.browser.page.waitForSelector(checkButtonSelector, {
-        timeout: 15000,
-      });
       await this.browser.page.click('label:nth-child(2)');
-      //await this.screenshot('шаг-2');
       const content = await this.browser.page.$$eval(
         contentSelector,
         (elements) =>
