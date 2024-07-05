@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { PuppeteerService } from './puppeteer.service';
-import { PuppeteerController } from './puppeteer.controller';
 import { LoggerService } from 'src/service/logger/logger.service';
 
 const loggerServiceProvider = {
@@ -9,7 +8,7 @@ const loggerServiceProvider = {
 };
 
 @Module({
-  controllers: [PuppeteerController],
+  controllers: [],
   providers: [PuppeteerService, loggerServiceProvider],
   exports: [PuppeteerService],
 })
