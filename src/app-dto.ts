@@ -58,8 +58,3 @@ export class ShortAllDescriptionDto {
   @Length(10, 30000, { each: true })
   readonly urls: string[];
 }
-
-export class ParserRequestDto {
-  //@IsStringOrUrlAndLength()
-  readonly originalUrl: string;
-}
