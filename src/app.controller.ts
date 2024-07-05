@@ -21,7 +21,7 @@ export class AppController {
 
   @Get('one-short-description')
   @UsePipes(new ValidationPipe({ whitelist: true }))
-  async start(@Body() body: ShortDescriptionDto): Promise<any> {
+  async start(@Body() body: ShortDescriptionDto) {
     this.logger.info('one-short-description');
     const reqStatus = await this.appService.getOneShort(body.query);
     if ('errorMessage' in reqStatus) {
@@ -36,7 +36,7 @@ export class AppController {
 
   @Get('all-short-descriptions')
   @UsePipes(new ValidationPipe({ whitelist: true }))
-  async startAll(@Body() body: ShortAllDescriptionDto): Promise<any> {
+  async startAll(@Body() body: ShortAllDescriptionDto) {
     this.logger.info('all-short-descriptions');
     const reqStatus = await this.appService.getAllShort(body.urls);
     if ('errorMessage' in reqStatus) {
@@ -62,7 +62,7 @@ export class AppController {
       content: string;
       summaryUrl: string;
     },
-  ): Promise<any> {
+  ) {
     this.logger.info('Запрос на получение краткого описания для парсера');
     const { originalTitle, imageUrl, originalUrl, resourceId } = body;
     const reqStatus = await this.appService.getOneShort(originalUrl);
