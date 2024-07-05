@@ -5,7 +5,7 @@ content-type: application/json
     "query": "https://habr.com/ru/companies/onlinepatent/news/825178/"
 }
 
-### text
+###
 GET {{url}}/one-short-description
 content-type: application/json
 

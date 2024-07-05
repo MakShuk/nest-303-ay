@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { LoggerService } from './service/logger/logger.service';
-import { PuppeteerService } from './puppeteer/puppeteer.service';
+import { PuppeteerService } from './service/puppeteer/puppeteer.service';
 import { isURL } from 'class-validator';
 import * as fs from 'fs/promises';
 import * as path from 'path';

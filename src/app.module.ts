@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { LoggerService } from './service/logger/logger.service';
-import { PuppeteerModule } from './puppeteer/puppeteer.module';
 import { ConfigModule } from '@nestjs/config';
+import { PuppeteerService } from './service/puppeteer/puppeteer.service';
 
 const loggerServiceProvider = {
   provide: LoggerService,
@@ -11,8 +11,8 @@ const loggerServiceProvider = {
 };
 
 @Module({
-  imports: [PuppeteerModule, ConfigModule.forRoot()],
+  imports: [ConfigModule.forRoot()],
   controllers: [AppController],
-  providers: [AppService, loggerServiceProvider],
+  providers: [AppService, loggerServiceProvider, PuppeteerService],
 })
 export class AppModule {}
